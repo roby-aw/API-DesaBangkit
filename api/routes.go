@@ -12,7 +12,7 @@ type Controller struct {
 }
 
 func RegistrationPath(e *echo.Echo, controller Controller) {
-	e.GET("/inline/:name", func(c echo.Context) error {
+	e.GET("/photo/:name", func(c echo.Context) error {
 		name := fmt.Sprintf("utils/img/%s", c.Param("name"))
 		fmt.Println(name)
 		return c.Inline(name, name)
