@@ -70,7 +70,10 @@ func (Controller *Controller) Detail_customer(c echo.Context) error {
 }
 
 func (Controller *Controller) UploadPhoto(c echo.Context) error {
-	err := utils.Upload(c)
+	name := c.FormValue("name")
+	email := c.FormValue("email")
+	file, err := c.FormFile("file")
+	err = utils.Upload(name, email, file)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"code":     400,

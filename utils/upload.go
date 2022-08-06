@@ -1,29 +1,20 @@
 package utils
 
 import (
-	"fmt"
 	"io"
-	"net/http"
+	"mime/multipart"
 	"os"
 	"path/filepath"
-
-	"github.com/labstack/echo/v4"
 )
 
-func Upload(c echo.Context) error {
+func Upload(name, email string, file *multipart.FileHeader) error {
 	// Read form fields
-	name := c.FormValue("name")
-	email := c.FormValue("email")
 
 	//-----------
 	// Read file
 	//-----------
 
 	// Source
-	file, err := c.FormFile("file")
-	if err != nil {
-		return err
-	}
 	src, err := file.Open()
 	if err != nil {
 		return err
@@ -50,5 +41,5 @@ func Upload(c echo.Context) error {
 		return err
 	}
 
-	return c.HTML(http.StatusOK, fmt.Sprintf("<p>File %s uploaded successfully with fields name=%s and email=%s.</p>", file.Filename, name, email))
+	return err
 }
