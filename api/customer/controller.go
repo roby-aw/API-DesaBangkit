@@ -23,7 +23,7 @@ func NewController(service customerBusiness.Service) *Controller {
 func (Controller *Controller) RegisterAccount(c echo.Context) error {
 	Data := customerBusiness.RegAccount{}
 	c.Bind(&Data)
-	result, err := Controller.service.CreateAccount(&Data)
+	_, err := Controller.service.CreateAccount(&Data)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"code":     400,
@@ -32,8 +32,7 @@ func (Controller *Controller) RegisterAccount(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"code":     200,
-		"messages": "success create data",
-		"data":     result,
+		"messages": "success register account",
 	})
 }
 

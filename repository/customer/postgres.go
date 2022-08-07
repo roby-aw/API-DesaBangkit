@@ -18,6 +18,12 @@ func NewPosgresRepository(db *gorm.DB) *PosgresRepository {
 	}
 }
 
+func (repo *PosgresRepository) FindAccountByEmail(email string) (*customer.Account, error) {
+	var data customer.Account
+	repo.db.Model(&repository.Account{}).First(&data)
+	return &data, nil
+}
+
 func (repo *PosgresRepository) CreateAccount(Data *customer.RegAccount) (*int, error) {
 	err := repo.db.Create(&repository.Account{Fullname: Data.Fullname, Email: Data.Email, Password: Data.Password, Role: Data.Role}).Error
 	if err != nil {

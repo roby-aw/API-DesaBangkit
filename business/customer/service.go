@@ -1,10 +1,13 @@
 package customer
 
 import (
+	"errors"
+
 	"github.com/go-playground/validator/v10"
 )
 
 type Repository interface {
+	FindAccountByEmail(email string) (*Account, error)
 	CreateAccount(Data *RegAccount) (*int, error)
 	Createcustomer(Data *Regcustomer) (*Regcustomer, error)
 	Findcustomer() ([]Customer, error)
@@ -12,6 +15,7 @@ type Repository interface {
 }
 
 type Service interface {
+	FindAccountByEmail(email string) (*Account, error)
 	CreateAccount(Data *RegAccount) (*int, error)
 	Createcustomer(Data *Regcustomer) (*Regcustomer, error)
 	Findcustomer() ([]Customer, error)
@@ -31,7 +35,15 @@ func NewService(repository Repository) Service {
 }
 
 func (s *service) CreateAccount(Data *RegAccount) (*int, error) {
+	data, err := s.repository.FindAccountByEmail(Data.Email)
+	if err != nil || data.Email != "" {
+		return nil, errors.New("Email already used")
+	}
 	return s.repository.CreateAccount(Data)
+}
+
+func (s *service) FindAccountByEmail(email string) (*Account, error) {
+	return s.repository.FindAccountByEmail(email)
 }
 
 func (s *service) Createcustomer(Data *Regcustomer) (*Regcustomer, error) {
