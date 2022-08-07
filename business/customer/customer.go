@@ -42,7 +42,7 @@ type Account struct {
 	Email     string `json:"email"`
 	Password  string `json:"password"`
 	ID_Role   int    `json:"id_role"`
-	Role      Role   `json:"role"`
+	Role      Role   `json:"role" gorm:"foreignkey:ID;references:ID_Role"`
 	Url_photo string `json:"url_photo"`
 }
 
