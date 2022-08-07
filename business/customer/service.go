@@ -46,7 +46,10 @@ func (s *service) CreateAccount(Data *RegAccount) (*int, error) {
 
 func (s *service) LoginAccount(Data *AuthLogin) (*ResLogin, error) {
 	Account, err := s.repository.FindAccountByEmail(Data.Email)
-	if err != nil && Account.Email != Data.Email && Data.Password != Account.Password {
+	if err != nil {
+		return nil, err
+	}
+	if Account.Email != Data.Email && Data.Password != Account.Password {
 		return nil, errors.New("Wrong Email or password")
 	}
 	token, err := s.repository.CreateToken(Account)
