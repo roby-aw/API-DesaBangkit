@@ -29,10 +29,10 @@ type Regcustomer struct {
 }
 
 type RegAccount struct {
-	Fullname  string `json:"fullname"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-	ID_Role   int    `json:"role"`
+	Fullname  string `json:"fullname" validate:"required"`
+	Email     string `json:"email" validate:"required,email"`
+	Password  string `json:"password" validate:"required"`
+	ID_Role   int    `json:"role" validate:"required"`
 	Url_photo string `json:"url_photo"`
 }
 

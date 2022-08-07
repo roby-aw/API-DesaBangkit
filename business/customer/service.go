@@ -38,6 +38,10 @@ func NewService(repository Repository) Service {
 }
 
 func (s *service) CreateAccount(Data *RegAccount) (*int, error) {
+	err := s.validate.Struct(Data)
+	if err != nil {
+		return nil, err
+	}
 	data, err := s.repository.FindAccountByEmail(Data.Email)
 	if err != nil || data.Email != "" {
 		return nil, errors.New("Email already used")
@@ -46,7 +50,10 @@ func (s *service) CreateAccount(Data *RegAccount) (*int, error) {
 }
 
 func (s *service) LoginAccount(Data *AuthLogin) (*ResLogin, error) {
-	fmt.Println(Data)
+	err := s.validate.Struct(Data)
+	if err != nil {
+		return nil, err
+	}
 	Acc, err := s.repository.FindAccountByEmail(Data.Email)
 	if err != nil {
 		return nil, err
