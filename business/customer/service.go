@@ -51,7 +51,8 @@ func (s *service) LoginAccount(Data *AuthLogin) (*ResLogin, error) {
 	if err != nil {
 		return nil, err
 	}
-	if Acc == nil {
+	fmt.Println(Acc)
+	if Acc.Email == "" {
 		return nil, errors.New("Wrong Email")
 	}
 	if Acc.Password != Data.Password {
