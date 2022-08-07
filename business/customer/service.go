@@ -2,6 +2,7 @@ package customer
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -55,6 +56,7 @@ func (s *service) LoginAccount(Data *AuthLogin) (*ResLogin, error) {
 	if Account.Password != Data.Password {
 		return nil, errors.New("Wrong Password")
 	}
+	fmt.Println(Account)
 	token, err := s.repository.CreateToken(Account)
 	Response := &ResLogin{
 		Account: *Account,
