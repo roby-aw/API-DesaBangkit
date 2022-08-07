@@ -20,7 +20,8 @@ type Account struct {
 	Fullname  string `gorm:"size:30"`
 	Email     string `gorm:"size:50;primaryKey"`
 	Password  string `gorm:"size:255"`
-	Role      int    `gorm:"size:1"`
+	ID_Role   int    `gorm:"size:1"`
+	Role      Role   `gorm:"foreignkey:ID;references:ID_Role"`
 	Url_photo string `gorm:"size:255"`
 }
 

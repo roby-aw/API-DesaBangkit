@@ -36,6 +36,23 @@ func (Controller *Controller) RegisterAccount(c echo.Context) error {
 	})
 }
 
+func (Controller *Controller) LoginAccount(c echo.Context) error {
+	Data := customerBusiness.AuthLogin{}
+	c.Bind(&Data)
+	result, err := Controller.service.LoginAccount(&Data)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"code":     400,
+			"messages": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success login",
+		"result":   result,
+	})
+}
+
 func (Controller *Controller) Registercustomer(c echo.Context) error {
 	Data := customerBusiness.Regcustomer{}
 	c.Bind(&Data)

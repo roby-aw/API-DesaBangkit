@@ -1,5 +1,7 @@
 package customer
 
+import "github.com/golang-jwt/jwt/v4"
+
 type Customer struct {
 	ID            uint   `json:"id"`
 	Nama          string `json:"nama"`
@@ -30,7 +32,7 @@ type RegAccount struct {
 	Fullname  string `json:"fullname"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
-	Role      int    `json:"role"`
+	ID_Role   int    `json:"role"`
 	Url_photo string `json:"url_photo"`
 }
 
@@ -39,8 +41,31 @@ type Account struct {
 	Fullname  string `json:"fullname"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
-	Role      int    `json:"role"`
+	ID_Role   int    `json:"id_role"`
+	Role      Role   `json:"role"`
 	Url_photo string `json:"url_photo"`
+}
+
+type Role struct {
+	ID   uint   `gorm:"primarykey"`
+	Name string `gorm:"size:10"`
+}
+
+type AuthLogin struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+}
+
+type Claims struct {
+	ID    int
+	Email string
+	Role  string
+	jwt.StandardClaims
+}
+
+type ResLogin struct {
+	Account Account `json:"account"`
+	Token   string  `json:"token"`
 }
 
 type Jurusan struct {

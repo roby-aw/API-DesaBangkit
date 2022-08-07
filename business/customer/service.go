@@ -8,6 +8,7 @@ import (
 
 type Repository interface {
 	FindAccountByEmail(email string) (*Account, error)
+	CreateToken(Data *Account) (*string, error)
 	CreateAccount(Data *RegAccount) (*int, error)
 	Createcustomer(Data *Regcustomer) (*Regcustomer, error)
 	Findcustomer() ([]Customer, error)
@@ -16,6 +17,7 @@ type Repository interface {
 
 type Service interface {
 	FindAccountByEmail(email string) (*Account, error)
+	LoginAccount(Data *AuthLogin) (*ResLogin, error)
 	CreateAccount(Data *RegAccount) (*int, error)
 	Createcustomer(Data *Regcustomer) (*Regcustomer, error)
 	Findcustomer() ([]Customer, error)
@@ -40,6 +42,19 @@ func (s *service) CreateAccount(Data *RegAccount) (*int, error) {
 		return nil, errors.New("Email already used")
 	}
 	return s.repository.CreateAccount(Data)
+}
+
+func (s *service) LoginAccount(Data *AuthLogin) (*ResLogin, error) {
+	Account, err := s.repository.FindAccountByEmail(Data.Email)
+	if err != nil || Account.Email != Data.Email || Data.Password != Account.Password {
+		return nil, errors.New("Wrong Email or password")
+	}
+	token, err := s.repository.CreateToken(Account)
+	Response := &ResLogin{
+		Account: *Account,
+		Token:   *token,
+	}
+	return Response, nil
 }
 
 func (s *service) FindAccountByEmail(email string) (*Account, error) {

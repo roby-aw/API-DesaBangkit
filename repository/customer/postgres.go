@@ -3,8 +3,10 @@ package customer
 import (
 	"api-desatanggap/business/customer"
 	"api-desatanggap/repository"
+	"os"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"gorm.io/gorm"
 )
 
@@ -20,12 +22,34 @@ func NewPosgresRepository(db *gorm.DB) *PosgresRepository {
 
 func (repo *PosgresRepository) FindAccountByEmail(email string) (*customer.Account, error) {
 	var data customer.Account
-	repo.db.Model(&repository.Account{}).Where("email = ?", email).First(&data)
+	repo.db.Model(&repository.Account{}).Where("email = ?", email).Preload("Role").First(&data)
 	return &data, nil
 }
 
+func (repo *PosgresRepository) CreateToken(Data *customer.Account) (*string, error) {
+	var Customer customer.Account
+	expirationTime := time.Now().Add(24 * time.Hour)
+
+	claims := &customer.Claims{
+		ID:    int(Customer.ID),
+		Email: Customer.Email,
+		Role:  Data.Role.Name,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	SECRET_KEY := os.Getenv("SECRET_JWT")
+	token_jwt, err := token.SignedString([]byte(SECRET_KEY))
+	if err != nil {
+		return nil, err
+	}
+	return &token_jwt, err
+}
+
 func (repo *PosgresRepository) CreateAccount(Data *customer.RegAccount) (*int, error) {
-	err := repo.db.Create(&repository.Account{Fullname: Data.Fullname, Email: Data.Email, Password: Data.Password, Role: Data.Role}).Error
+	err := repo.db.Create(&repository.Account{Fullname: Data.Fullname, Email: Data.Email, Password: Data.Password, ID_Role: Data.ID_Role}).Error
 	if err != nil {
 		return nil, err
 	}
