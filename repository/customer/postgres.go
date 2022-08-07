@@ -20,7 +20,7 @@ func NewPosgresRepository(db *gorm.DB) *PosgresRepository {
 
 func (repo *PosgresRepository) FindAccountByEmail(email string) (*customer.Account, error) {
 	var data customer.Account
-	repo.db.Model(&repository.Account{}).First(&data)
+	repo.db.Model(&repository.Account{}).Where("email = ?", email).First(&data)
 	return &data, nil
 }
 
