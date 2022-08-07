@@ -4,6 +4,7 @@ import (
 	"api-desatanggap/api"
 	"api-desatanggap/app/modules"
 	"api-desatanggap/config"
+	"api-desatanggap/repository"
 	"api-desatanggap/utils"
 	"fmt"
 	"log"
@@ -28,6 +29,8 @@ func main() {
 	defer dbCon.CloseConnection()
 
 	controllers := modules.RegistrationModules(dbCon, config)
+	dbCon.Postgres.AutoMigrate(&repository.Account{})
+	dbCon.Postgres.AutoMigrate(&repository.Role{})
 
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{}))
