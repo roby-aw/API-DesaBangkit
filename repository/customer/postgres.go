@@ -3,6 +3,7 @@ package customer
 import (
 	"api-desatanggap/business/customer"
 	"api-desatanggap/repository"
+	"fmt"
 	"os"
 	"time"
 
@@ -23,6 +24,7 @@ func NewPosgresRepository(db *gorm.DB) *PosgresRepository {
 func (repo *PosgresRepository) FindAccountByEmail(email string) (*customer.Account, error) {
 	var data customer.Account
 	repo.db.Model(&repository.Account{}).Where("email = ?", email).Preload("Role").First(&data)
+	fmt.Println(data)
 	return &data, nil
 }
 
