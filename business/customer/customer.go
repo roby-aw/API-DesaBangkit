@@ -26,6 +26,15 @@ type Regcustomer struct {
 	Gender        int    `json:"gender"`
 }
 
+type RegAccount struct {
+	ID        uint   `json:"id"`
+	Fullname  string `json:"fullname"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	Role      int    `json:"role"`
+	Url_photo string `json:"url_photo"`
+}
+
 type Jurusan struct {
 	ID   string `json:"id"`
 	Nama string `json:"nama"`

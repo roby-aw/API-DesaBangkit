@@ -18,6 +18,14 @@ func NewPosgresRepository(db *gorm.DB) *PosgresRepository {
 	}
 }
 
+func (repo *PosgresRepository) CreateAccount(Data *customer.RegAccount) (*int, error) {
+	err := repo.db.Create(&repository.Account{Fullname: Data.Fullname, Email: Data.Email, Password: Data.Password, Role: Data.Role}).Error
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
 func (repo *PosgresRepository) Createcustomer(Data *customer.Regcustomer) (*customer.Regcustomer, error) {
 	date, _ := time.Parse("2006-01-02", Data.Tanggal_lahir)
 	err := repo.db.Create(&repository.Customer{Nama: Data.Nama, Gender: Data.Gender, Tanggal_lahir: date}).Error

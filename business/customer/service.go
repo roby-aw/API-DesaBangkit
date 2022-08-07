@@ -5,12 +5,14 @@ import (
 )
 
 type Repository interface {
+	CreateAccount(Data *RegAccount) (*int, error)
 	Createcustomer(Data *Regcustomer) (*Regcustomer, error)
 	Findcustomer() ([]Customer, error)
 	Detail_customer(id int) (*Detail_customer, error)
 }
 
 type Service interface {
+	CreateAccount(Data *RegAccount) (*int, error)
 	Createcustomer(Data *Regcustomer) (*Regcustomer, error)
 	Findcustomer() ([]Customer, error)
 	Detail_customer(id int) (*Detail_customer, error)
@@ -26,6 +28,10 @@ func NewService(repository Repository) Service {
 		repository: repository,
 		validate:   validator.New(),
 	}
+}
+
+func (s *service) CreateAccount(Data *RegAccount) (*int, error) {
+	return s.repository.CreateAccount(Data)
 }
 
 func (s *service) Createcustomer(Data *Regcustomer) (*Regcustomer, error) {

@@ -17,6 +17,8 @@ func RegistrationPath(e *echo.Echo, controller Controller) {
 		fmt.Println(name)
 		return c.Inline(name, name)
 	})
+	acc := e.Group("/account")
+	acc.POST("/register", controller.CustomerController.RegisterAccount)
 	e.POST("/upload", controller.CustomerController.UploadPhoto)
 	e.POST("/register", controller.CustomerController.Registercustomer)
 	e.GET("/customer", controller.CustomerController.Findcustomer)
