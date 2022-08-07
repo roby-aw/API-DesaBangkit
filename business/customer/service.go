@@ -46,6 +46,7 @@ func (s *service) CreateAccount(Data *RegAccount) (*int, error) {
 }
 
 func (s *service) LoginAccount(Data *AuthLogin) (*ResLogin, error) {
+	fmt.Println(Data)
 	Account, err := s.repository.FindAccountByEmail(Data.Email)
 	if err != nil {
 		return nil, err
