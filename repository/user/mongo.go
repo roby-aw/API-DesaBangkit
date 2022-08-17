@@ -59,7 +59,10 @@ func (repo *MongoDBRepository) FindAccountByEmail(email string) (*user.Account, 
 
 func (repo *MongoDBRepository) CreateAccount(Data *user.RegAccount) (*user.Account, error) {
 	hashpw, _ := utils.Hash(Data.Password)
-	ObjId_userid, _ := primitive.ObjectIDFromHex(Data.Role_id)
+	ObjId_userid, err := primitive.ObjectIDFromHex(Data.Role_id)
+	if err != nil {
+		return nil, err
+	}
 	InsertData := &user.Account{
 		Email:    Data.Email,
 		Fullname: Data.Fullname,

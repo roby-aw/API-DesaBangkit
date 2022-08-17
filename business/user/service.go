@@ -41,8 +41,8 @@ func (s *service) CreateAccount(Data *RegAccount) (*Account, error) {
 	if err != nil {
 		return nil, err
 	}
-	data, err := s.repository.FindAccountByEmail(Data.Email)
-	if data.Email != "" {
+	data, _ := s.repository.FindAccountByEmail(Data.Email)
+	if data != nil {
 		return nil, errors.New("Email already used")
 	}
 	return s.repository.CreateAccount(Data)
