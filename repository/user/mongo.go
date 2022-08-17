@@ -16,12 +16,14 @@ import (
 )
 
 type MongoDBRepository struct {
-	col *mongo.Collection
+	col     *mongo.Collection
+	colRole *mongo.Collection
 }
 
 func NewMongoRepository(col *mongo.Database) *MongoDBRepository {
 	return &MongoDBRepository{
-		col: col.Collection("users"),
+		col:     col.Collection("users"),
+		colRole: col.Collection("roles_user"),
 	}
 }
 
@@ -100,4 +102,14 @@ func (repo *MongoDBRepository) Createcustomer(Data *user.Regcustomer) (*user.Reg
 
 func (repo *MongoDBRepository) Findcustomer() ([]user.Customer, error) {
 	return nil, nil
+}
+
+func (repo *MongoDBRepository) GetRole() ([]*user.Role, error) {
+	var Role []*user.Role
+	cur, err := repo.colRole.Find(context.Background(), bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	cur.All(context.Background(), &Role)
+	return Role, err
 }

@@ -13,6 +13,7 @@ type Repository interface {
 	CreateAccount(Data *RegAccount) (*Account, error)
 	Createcustomer(Data *Regcustomer) (*Regcustomer, error)
 	Findcustomer() ([]Customer, error)
+	GetRole() ([]*Role, error)
 }
 
 type Service interface {
@@ -20,6 +21,7 @@ type Service interface {
 	LoginAccount(Data *AuthLogin) (*ResLogin, error)
 	CreateAccount(Data *RegAccount) (*Account, error)
 	Findcustomer() ([]Customer, error)
+	GetRole() ([]*Role, error)
 }
 
 type service struct {
@@ -77,4 +79,8 @@ func (s *service) FindAccountByEmail(email string) (*Account, error) {
 
 func (s *service) Findcustomer() ([]Customer, error) {
 	return s.repository.Findcustomer()
+}
+
+func (s *service) GetRole() ([]*Role, error) {
+	return s.repository.GetRole()
 }
