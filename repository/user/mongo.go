@@ -51,7 +51,7 @@ func (repo *MongoDBRepository) FindAccountByEmail(email string) (*user.Account, 
 	if err = cur.All(context.Background(), &tmpAccount); err != nil {
 		return nil, err
 	}
-	if len(tmpAccount) < 1 {
+	if len(tmpAccount) == 0 {
 		return nil, errors.New("Data Not Found")
 	}
 	return &tmpAccount[0], nil
