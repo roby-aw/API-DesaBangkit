@@ -2,51 +2,70 @@ package utils
 
 import (
 	"api-desatanggap/config"
+	"context"
 	"fmt"
 	"os"
 
-	"gorm.io/driver/postgres"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"gorm.io/gorm"
 )
 
 type DatabaseDriver string
 
 const (
-	Postgres DatabaseDriver = "postgres"
+	MongoDB DatabaseDriver = "mongodb"
+	Mysql   DatabaseDriver = "mysql"
 )
 
 type DatabaseConnection struct {
 	Driver DatabaseDriver
 
-	Postgres *gorm.DB
+	MongoDB     *mongo.Database
+	mongoClient *mongo.Client
+	Mysql       *gorm.DB
 }
 
 func NewConnectionDatabase(config *config.AppConfig) *DatabaseConnection {
 	var db DatabaseConnection
-	db.Driver = Postgres
-	db.Postgres = newPostgres(config)
+	dbName := os.Getenv("MONGO_DBNAME")
+	db.mongoClient = newMongodb(config)
+	db.MongoDB = db.mongoClient.Database(dbName)
 
 	return &db
 }
 
-func newPostgres(config *config.AppConfig) *gorm.DB {
-	dbHost := os.Getenv("DB_HOST")
-	dbUser := os.Getenv("DB_USERNAME")
-	dbPass := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-	dbPort := os.Getenv("DB_PORT")
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=require TimeZone=Asia/Jakarta", dbHost, dbUser, dbPass, dbName, dbPort)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+func newMongodb(config *config.AppConfig) *mongo.Client {
+	// dbUser := os.Getenv("MONGO_USERNAME")
+	// dbPass := os.Getenv("MONGO_PASSWORD")
+	dbUrl := os.Getenv("MONGO_HOST")
+	dbport := os.Getenv("MONGO_PORT")
+	dbPass := os.Getenv("MONGO_PASS")
+	dbUser := os.Getenv("MONGO_USER")
+	dbEtc := os.Getenv("MONGO_ETC")
+
+	url := "mongodb://" + dbUser + ":" + dbPass + "@" + dbUrl + ":" + dbport + dbEtc
+	fmt.Println(url)
+
+	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
 		panic(err)
 	}
-	// db.Migrator().DropTable(customermitra.Customer{})
-	return db
+
+	err = client.Connect(context.Background())
+	if err != nil {
+		panic(err)
+	}
+
+	err = client.Ping(context.Background(), readpref.Primary())
+	if err != nil {
+		panic(err)
+	}
+
+	return client
 }
 
 func (db *DatabaseConnection) CloseConnection() {
-	if db.Postgres != nil {
-		db, _ := db.Postgres.DB()
-		db.Close()
-	}
+	db.mongoClient.Disconnect(context.Background())
 }

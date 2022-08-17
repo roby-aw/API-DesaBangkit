@@ -1,31 +1,37 @@
 package repository
 
 import (
-	"time"
-
-	"gorm.io/gorm"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type Customer struct {
-	ID            uint      `gorm:"primarykey"`
-	Nama          string    `json:"nama"`
-	Tanggal_lahir time.Time `json:"tanggal_lahir"`
-	Gender        int       `json:"gender"`
-	ID_Hobi       int       `json:"id_hobi"`
-	ID_Jurusan    int       `json:"id_jurusan"`
-}
+// type Customer struct {
+// 	ID            uint      `gorm:"primarykey"`
+// 	Nama          string    `json:"nama"`
+// 	Tanggal_lahir time.Time `json:"tanggal_lahir"`
+// 	Gender        int       `json:"gender"`
+// 	ID_Hobi       int       `json:"id_hobi"`
+// 	ID_Jurusan    int       `json:"id_jurusan"`
+// }
 
 type Account struct {
-	gorm.Model
-	Fullname  string `gorm:"size:30"`
-	Email     string `gorm:"size:50;primaryKey"`
-	Password  string `gorm:"size:255"`
-	ID_Role   int    `gorm:"size:1"`
-	Role      Role   `gorm:"foreignkey:ID;references:ID_Role"`
-	Url_photo string `gorm:"size:255"`
+	ID       primitive.ObjectID `bson:"_id,omitempty"`
+	Email    string             `bson:"email,omitempty" binding:"required"`
+	Fullname string             `bson:"fullname,omitempty" binding:"required"`
+	Password string             `bson:"password,omitempty" binding:"required"`
+	Role_id  primitive.ObjectID `bson:"role_id,omitempty" binding:"required"`
 }
 
+type Admin struct {
+	ID       primitive.ObjectID `bson:"_id,omitempty"`
+	Username string             `bson:"username,omitempty" binding:"required"`
+	Fullname string             `bson:"fullname,omitempty" binding:"required"`
+	Password string             `bson:"password,omitempty" binding:"required"`
+	Role_id  primitive.ObjectID `bson:"role_id,omitempty" binding:"required"`
+	// Roles     Role               `bson:"roles"`
+}
 type Role struct {
-	ID   uint   `gorm:"primarykey"`
-	Name string `gorm:"size:10"`
+	ID          primitive.ObjectID `bson:"_id,omitempty" json:"_id"`
+	Rolename    string             `bson:"rolename,omitempty" binding:"required" json:"rolename"`
+	Rolelabel   string             `bson:"rolelabel,omitempty" binding:"required" json:"rolelabel"`
+	Description string             `bson:"description,omitempty" binding:"required" json:"description"`
 }

@@ -2,20 +2,27 @@ package modules
 
 import (
 	"api-desatanggap/api"
-	customerApi "api-desatanggap/api/customer"
-	customerBusiness "api-desatanggap/business/customer"
+	adminApi "api-desatanggap/api/admin"
+	userApi "api-desatanggap/api/user"
+	adminBusiness "api-desatanggap/business/admin"
+	userBusiness "api-desatanggap/business/user"
 	"api-desatanggap/config"
-	customerRepo "api-desatanggap/repository/customer"
+	adminRepo "api-desatanggap/repository/admin"
+	userRepo "api-desatanggap/repository/user"
 	"api-desatanggap/utils"
 )
 
 func RegistrationModules(dbCon *utils.DatabaseConnection, _ *config.AppConfig) api.Controller {
-	customerPermitRepository := customerRepo.RepositoryFactory(dbCon)
-	customerPermitService := customerBusiness.NewService(customerPermitRepository)
-	customerPermitController := customerApi.NewController(customerPermitService)
+	userPermitRepository := userRepo.RepositoryFactory(dbCon)
+	userPermitService := userBusiness.NewService(userPermitRepository)
+	userPermitController := userApi.NewController(userPermitService)
 
+	adminPermitRepository := adminRepo.RepositoryFactory(dbCon)
+	adminPermitService := adminBusiness.NewService(adminPermitRepository)
+	adminPermitController := adminApi.NewController(adminPermitService)
 	controller := api.Controller{
-		CustomerController: customerPermitController,
+		UserController:  userPermitController,
+		AdminController: adminPermitController,
 	}
 	return controller
 }

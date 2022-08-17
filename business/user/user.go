@@ -1,6 +1,9 @@
-package customer
+package user
 
-import "github.com/golang-jwt/jwt/v4"
+import (
+	"github.com/golang-jwt/jwt/v4"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Customer struct {
 	ID            uint   `json:"id"`
@@ -9,17 +12,6 @@ type Customer struct {
 	Gender        string `json:"gender"`
 	ID_Hobi       int    `json:"id_hobi"`
 	ID_Gender     int    `json:"id_gender"`
-}
-
-type Detail_customer struct {
-	ID            uint    `gorm:"primarykey"`
-	Nama          string  `json:"nama"`
-	Tanggal_lahir string  `json:"tanggal_lahir"`
-	Gender        string  `json:"gender"`
-	ID_Hobi       int     `json:"id_hobi"`
-	Hobi          Hobi    `gorm:"foreignkey:ID;references:ID_Hobi"`
-	ID_Jurusan    int     `json:"id_jurusan"`
-	Jurusan       Jurusan `gorm:"foreignkey:ID;references:ID_Jurusan"`
 }
 
 type Regcustomer struct {
@@ -32,23 +24,24 @@ type RegAccount struct {
 	Fullname  string `json:"fullname" validate:"required"`
 	Email     string `json:"email" validate:"required,email"`
 	Password  string `json:"password" validate:"required"`
-	ID_Role   int    `json:"role" validate:"required"`
+	Role_id   string `json:"role_id,omitempty" binding:"required"`
 	Url_photo string `json:"url_photo"`
 }
 
 type Account struct {
-	ID        uint   `json:"id"`
-	Fullname  string `json:"fullname"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-	ID_Role   int    `json:"id_role"`
-	Role      Role   `json:"role" gorm:"foreignkey:ID;references:ID_Role"`
-	Url_photo string `json:"url_photo"`
+	ID       primitive.ObjectID `bson:"_id,omitempty"`
+	Email    string             `bson:"email,omitempty" binding:"required"`
+	Fullname string             `bson:"fullname,omitempty" binding:"required"`
+	Password string             `bson:"password,omitempty" binding:"required"`
+	Role_id  primitive.ObjectID `bson:"role_id,omitempty" binding:"required"`
+	Roles    []Role             `bson:"roles" json:"roles"`
 }
 
 type Role struct {
-	ID   uint   `gorm:"primarykey"`
-	Name string `gorm:"size:10"`
+	ID          primitive.ObjectID `bson:"_id,omitempty" json:"_id"`
+	Name        string             `bson:"name,omitempty" binding:"required" json:"rolename"`
+	Label       string             `bson:"label,omitempty" binding:"required" json:"rolelabel"`
+	Description string             `bson:"description,omitempty" binding:"required" json:"description"`
 }
 
 type AuthLogin struct {

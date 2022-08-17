@@ -1,27 +1,25 @@
-package customer
+package user
 
 import (
-	customerBusiness "api-desatanggap/business/customer"
+	userBusiness "api-desatanggap/business/user"
 	"api-desatanggap/utils"
-	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
 type Controller struct {
-	service customerBusiness.Service
+	service userBusiness.Service
 }
 
-func NewController(service customerBusiness.Service) *Controller {
+func NewController(service userBusiness.Service) *Controller {
 	return &Controller{
 		service: service,
 	}
 }
 
 func (Controller *Controller) RegisterAccount(c echo.Context) error {
-	Data := customerBusiness.RegAccount{}
+	Data := userBusiness.RegAccount{}
 	c.Bind(&Data)
 	_, err := Controller.service.CreateAccount(&Data)
 	if err != nil {
@@ -37,7 +35,7 @@ func (Controller *Controller) RegisterAccount(c echo.Context) error {
 }
 
 func (Controller *Controller) LoginAccount(c echo.Context) error {
-	Data := customerBusiness.AuthLogin{}
+	Data := userBusiness.AuthLogin{}
 	c.Bind(&Data)
 	result, err := Controller.service.LoginAccount(&Data)
 	if err != nil {
@@ -53,22 +51,22 @@ func (Controller *Controller) LoginAccount(c echo.Context) error {
 	})
 }
 
-func (Controller *Controller) Registercustomer(c echo.Context) error {
-	Data := customerBusiness.Regcustomer{}
-	c.Bind(&Data)
-	result, err := Controller.service.Createcustomer(&Data)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"code":     400,
-			"messages": err.Error(),
-		})
-	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code":     200,
-		"messages": "success create data",
-		"data":     result,
-	})
-}
+// func (Controller *Controller) Registercustomer(c echo.Context) error {
+// 	Data := userBusiness.Regcustomer{}
+// 	c.Bind(&Data)
+// 	result, err := Controller.service.Createcustomer(&Data)
+// 	if err != nil {
+// 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+// 			"code":     400,
+// 			"messages": err.Error(),
+// 		})
+// 	}
+// 	return c.JSON(http.StatusOK, map[string]interface{}{
+// 		"code":     200,
+// 		"messages": "success create data",
+// 		"data":     result,
+// 	})
+// }
 
 func (Controller *Controller) Findcustomer(c echo.Context) error {
 	result, err := Controller.service.Findcustomer()
@@ -81,23 +79,6 @@ func (Controller *Controller) Findcustomer(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"code":     200,
 		"messages": "success get all data customer",
-		"data":     result,
-	})
-}
-
-func (Controller *Controller) Detail_customer(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	fmt.Println(id)
-	result, err := Controller.service.Detail_customer(id)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"code":     400,
-			"messages": err.Error(),
-		})
-	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"code":     200,
-		"messages": "success get detail customer",
 		"data":     result,
 	})
 }

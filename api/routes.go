@@ -1,14 +1,16 @@
 package api
 
 import (
-	"api-desatanggap/api/customer"
+	"api-desatanggap/api/admin"
+	"api-desatanggap/api/user"
 	"fmt"
 
 	"github.com/labstack/echo/v4"
 )
 
 type Controller struct {
-	CustomerController *customer.Controller
+	UserController  *user.Controller
+	AdminController *admin.Controller
 }
 
 func RegistrationPath(e *echo.Echo, controller Controller) {
@@ -18,10 +20,14 @@ func RegistrationPath(e *echo.Echo, controller Controller) {
 		return c.Inline(name, name)
 	})
 	acc := e.Group("/users")
-	acc.POST("/login", controller.CustomerController.LoginAccount)
-	acc.POST("/registrations", controller.CustomerController.RegisterAccount)
-	e.POST("/upload", controller.CustomerController.UploadPhoto)
-	e.POST("/register", controller.CustomerController.Registercustomer)
-	e.GET("/customer", controller.CustomerController.Findcustomer)
-	e.GET("/detcustomer/:id", controller.CustomerController.Detail_customer)
+	acc.POST("/login", controller.UserController.LoginAccount)
+	acc.POST("/registrations", controller.UserController.RegisterAccount)
+	e.POST("/upload", controller.UserController.UploadPhoto)
+	// e.POST("/register", controller.UserController.RegisterUser)
+	// e.GET("/User", controller.UserController.FindUser)
+	admin := e.Group("/administrators")
+	admin.GET("/role", controller.AdminController.GetRole)
+	admin.POST("/registrations", controller.AdminController.RegisterAdmin)
+	admin.POST("/login", controller.AdminController.LoginAdmin)
+
 }

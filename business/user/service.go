@@ -1,8 +1,8 @@
-package customer
+package user
 
 import (
+	"api-desatanggap/utils"
 	"errors"
-	"fmt"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -10,19 +10,16 @@ import (
 type Repository interface {
 	FindAccountByEmail(email string) (*Account, error)
 	CreateToken(Data *Account) (*string, error)
-	CreateAccount(Data *RegAccount) (*int, error)
+	CreateAccount(Data *RegAccount) (*Account, error)
 	Createcustomer(Data *Regcustomer) (*Regcustomer, error)
 	Findcustomer() ([]Customer, error)
-	Detail_customer(id int) (*Detail_customer, error)
 }
 
 type Service interface {
 	FindAccountByEmail(email string) (*Account, error)
 	LoginAccount(Data *AuthLogin) (*ResLogin, error)
-	CreateAccount(Data *RegAccount) (*int, error)
-	Createcustomer(Data *Regcustomer) (*Regcustomer, error)
+	CreateAccount(Data *RegAccount) (*Account, error)
 	Findcustomer() ([]Customer, error)
-	Detail_customer(id int) (*Detail_customer, error)
 }
 
 type service struct {
@@ -37,13 +34,13 @@ func NewService(repository Repository) Service {
 	}
 }
 
-func (s *service) CreateAccount(Data *RegAccount) (*int, error) {
+func (s *service) CreateAccount(Data *RegAccount) (*Account, error) {
 	err := s.validate.Struct(Data)
 	if err != nil {
 		return nil, err
 	}
 	data, err := s.repository.FindAccountByEmail(Data.Email)
-	if err != nil || data.Email != "" {
+	if data.Email != "" {
 		return nil, errors.New("Email already used")
 	}
 	return s.repository.CreateAccount(Data)
@@ -56,16 +53,12 @@ func (s *service) LoginAccount(Data *AuthLogin) (*ResLogin, error) {
 	}
 	Acc, err := s.repository.FindAccountByEmail(Data.Email)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("wrong email")
 	}
-	fmt.Println(Acc)
-	if Acc.Email == "" {
-		return nil, errors.New("Wrong Email")
+	err = utils.VerifyPassword(Acc.Password, Data.Password)
+	if err != nil {
+		return nil, errors.New("wrong password")
 	}
-	if Acc.Password != Data.Password {
-		return nil, errors.New("Wrong Password")
-	}
-	fmt.Println(Acc)
 	token, err := s.repository.CreateToken(Acc)
 	Response := &ResLogin{
 		Account: *Acc,
@@ -78,14 +71,10 @@ func (s *service) FindAccountByEmail(email string) (*Account, error) {
 	return s.repository.FindAccountByEmail(email)
 }
 
-func (s *service) Createcustomer(Data *Regcustomer) (*Regcustomer, error) {
-	return s.repository.Createcustomer(Data)
-}
+// func (s *service) Createcustomer(Data *Regcustomer) (*Account, error) {
+// 	return s.repository.Createcustomer(Data)
+// }
 
 func (s *service) Findcustomer() ([]Customer, error) {
 	return s.repository.Findcustomer()
-}
-
-func (s *service) Detail_customer(id int) (*Detail_customer, error) {
-	return s.repository.Detail_customer(id)
 }
