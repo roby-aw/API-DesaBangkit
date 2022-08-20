@@ -118,6 +118,10 @@ func (s *service) ValidationEmail(Data string) error {
 }
 
 func (s *service) VerificationAccount(code string) error {
+	isLetter := utils.IsLetter(code)
+	if isLetter != true {
+		return s.repository.VerificationAccount(code)
+	}
 	data, err := utils.DecodeBase64(code)
 	if err != nil {
 		return err
