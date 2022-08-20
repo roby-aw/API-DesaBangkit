@@ -2,6 +2,7 @@ package user
 
 import (
 	"api-desatanggap/business/user"
+	"api-desatanggap/repository"
 	"api-desatanggap/utils"
 	"context"
 	"errors"
@@ -18,12 +19,14 @@ import (
 type MongoDBRepository struct {
 	col     *mongo.Collection
 	colRole *mongo.Collection
+	colCode *mongo.Collection
 }
 
 func NewMongoRepository(col *mongo.Database) *MongoDBRepository {
 	return &MongoDBRepository{
 		col:     col.Collection("users"),
 		colRole: col.Collection("roles_user"),
+		colCode: col.Collection("code_otp"),
 	}
 }
 
@@ -63,11 +66,12 @@ func (repo *MongoDBRepository) CreateAccount(Data *user.RegAccount) (*user.Accou
 	if err != nil {
 		return nil, err
 	}
-	InsertData := &user.Account{
-		Email:    Data.Email,
-		Fullname: Data.Fullname,
-		Password: string(hashpw),
-		Role_id:  ObjId_userid,
+	InsertData := &repository.Account{
+		Email:      Data.Email,
+		Fullname:   Data.Fullname,
+		Password:   string(hashpw),
+		Role_id:    ObjId_userid,
+		IsVerified: false,
 	}
 	result, err := repo.col.InsertOne(context.Background(), InsertData)
 	if err != nil {
@@ -76,7 +80,16 @@ func (repo *MongoDBRepository) CreateAccount(Data *user.RegAccount) (*user.Accou
 	id, err := primitive.ObjectIDFromHex(fmt.Sprintf("%s", result.InsertedID))
 
 	InsertData.ID = id
-	return InsertData, nil
+
+	ResponseAccount := &user.Account{
+		ID:         id,
+		Email:      InsertData.Email,
+		Fullname:   InsertData.Fullname,
+		Password:   InsertData.Password,
+		Role_id:    InsertData.Role_id,
+		IsVerified: InsertData.IsVerified,
+	}
+	return ResponseAccount, nil
 }
 
 func (repo *MongoDBRepository) CreateToken(Data *user.Account) (*string, error) {
@@ -115,4 +128,46 @@ func (repo *MongoDBRepository) GetRole() ([]*user.Role, error) {
 	}
 	cur.All(context.Background(), &Role)
 	return Role, err
+}
+
+func (repo *MongoDBRepository) SendVerification(email string) (*string, error) {
+	codeotp, err := utils.InitEmail(email)
+	if err != nil {
+		return nil, err
+	}
+	return &codeotp, nil
+}
+
+func (repo *MongoDBRepository) ValidationEmail(Data string) error {
+	return nil
+}
+
+func (repo *MongoDBRepository) CreateCodeOtp(email string, codeotp string) error {
+	timeExpired := time.Now().Add(24 * time.Hour)
+	InsertCode := &repository.CodeOtp{
+		Email:      email,
+		Code:       codeotp,
+		Expired_at: timeExpired,
+	}
+	_, err := repo.colCode.InsertOne(context.Background(), InsertCode)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *MongoDBRepository) VerificationAccount(code string) error {
+	var codeotp repository.CodeOtp
+	err := repo.colCode.FindOneAndDelete(context.Background(), bson.M{"code": code}).Decode(&codeotp)
+	fmt.Println(codeotp)
+	if err != nil {
+		return errors.New("Code Not Found")
+	}
+	filter := bson.M{"email": codeotp.Email}
+	update := bson.M{"isverified": true}
+	_, err = repo.col.UpdateOne(context.Background(), filter, bson.M{"$set": update})
+	if err != nil {
+		return err
+	}
+	return nil
 }

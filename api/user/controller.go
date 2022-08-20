@@ -113,3 +113,28 @@ func (Controller *Controller) GetRole(c echo.Context) error {
 		"result":   result,
 	})
 }
+
+func (Controller *Controller) SmtpEmail(c echo.Context) error {
+	email := c.QueryParam("email")
+	utils.InitEmail(email)
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success send email",
+		"result":   email,
+	})
+}
+
+func (Controller *Controller) VerificationAccount(c echo.Context) error {
+	code := c.QueryParam("code")
+	err := Controller.service.VerificationAccount(code)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"code":     400,
+			"messages": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success verification account",
+	})
+}

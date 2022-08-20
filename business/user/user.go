@@ -1,6 +1,8 @@
 package user
 
 import (
+	"time"
+
 	"github.com/golang-jwt/jwt/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -29,12 +31,13 @@ type RegAccount struct {
 }
 
 type Account struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty"`
-	Email    string             `bson:"email,omitempty" binding:"required"`
-	Fullname string             `bson:"fullname,omitempty" binding:"required"`
-	Password string             `bson:"password,omitempty" binding:"required"`
-	Role_id  primitive.ObjectID `bson:"role_id,omitempty" binding:"required"`
-	Roles    []Role             `bson:"roles" json:"roles"`
+	ID         primitive.ObjectID `bson:"_id,omitempty"`
+	Email      string             `bson:"email,omitempty" binding:"required"`
+	Fullname   string             `bson:"fullname,omitempty" binding:"required"`
+	Password   string             `bson:"password,omitempty" binding:"required"`
+	Role_id    primitive.ObjectID `bson:"role_id,omitempty" binding:"required"`
+	IsVerified bool               `bson:"isverified"`
+	Roles      []Role             `bson:"roles" json:"roles"`
 }
 
 type Role struct {
@@ -69,4 +72,10 @@ type Jurusan struct {
 type Hobi struct {
 	ID   int    `gorm:"primarykey" json:"id"`
 	Nama string `json:"nama"`
+}
+
+type CodeOtp struct {
+	Email      string    `json:"email" bson:"email,omitempty"`
+	Code       string    `json:"code" bson:"code,omitempty"`
+	Expired_at time.Time `json:"expired_at" bson:"expired_at,omitempty"`
 }

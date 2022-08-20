@@ -14,6 +14,7 @@ type Controller struct {
 }
 
 func RegistrationPath(e *echo.Echo, controller Controller) {
+	e.POST("/sendemail", controller.UserController.SmtpEmail)
 	e.GET("/photo/:name", func(c echo.Context) error {
 		name := fmt.Sprintf("utils/img/%s", c.Param("name"))
 		fmt.Println(name)
@@ -23,6 +24,7 @@ func RegistrationPath(e *echo.Echo, controller Controller) {
 	acc.POST("/login", controller.UserController.LoginAccount)
 	acc.POST("/registrations", controller.UserController.RegisterAccount)
 	acc.GET("/role", controller.UserController.GetRole)
+	acc.GET("/verification-account", controller.UserController.VerificationAccount)
 	e.POST("/upload", controller.UserController.UploadPhoto)
 	// e.POST("/register", controller.UserController.RegisterUser)
 	// e.GET("/User", controller.UserController.FindUser)
