@@ -17,7 +17,7 @@ func InitEmail(email string) (string, error) {
 	hashCode := EncodeBase64([]byte(Generateotp))
 	fmt.Println(hashCode)
 	fmt.Println(Generateotp)
-	message := fmt.Sprintf("Link Verifikasi : https://api-desabangkit.herokuapp.com/users/verification-account?code=%s", hashCode)
+	message := fmt.Sprintf("Kode Verifikasi : %s \n Link Verifikasi : https://api-desabangkit.herokuapp.com/users/verification-account?code=%s", Generateotp, hashCode)
 
 	err := sendMail(to, cc, subject, message)
 	if err != nil {
