@@ -3,6 +3,7 @@ package user
 import (
 	"api-desatanggap/utils"
 	"errors"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -118,13 +119,13 @@ func (s *service) ValidationEmail(Data string) error {
 }
 
 func (s *service) VerificationAccount(code string) error {
-	isLetter := utils.IsLetter(code)
-	if isLetter != true {
+	_, err := strconv.Atoi(code)
+	if err == nil {
 		return s.repository.VerificationAccount(code)
 	}
 	data, err := utils.DecodeBase64(code)
 	if err != nil {
-		return err
+		return errors.New("wrong code")
 	}
 	return s.repository.VerificationAccount(string(data))
 }
