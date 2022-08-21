@@ -2,6 +2,7 @@ package api
 
 import (
 	"api-desatanggap/api/admin"
+	"api-desatanggap/api/middleware"
 	"api-desatanggap/api/user"
 	"fmt"
 
@@ -24,8 +25,9 @@ func RegistrationPath(e *echo.Echo, controller Controller) {
 	acc.POST("/login", controller.UserController.LoginAccount)
 	acc.POST("/registrations", controller.UserController.RegisterAccount)
 	acc.GET("/role", controller.UserController.GetRole)
-	acc.GET("/verification-account", controller.UserController.VerificationAccount)
+	acc.POST("/verification-account", controller.UserController.VerificationAccount)
 	e.POST("/upload", controller.UserController.UploadPhoto)
+	acc.GET("/test", controller.UserController.GetRole, middleware.JWTMiddleware())
 	// e.POST("/register", controller.UserController.RegisterUser)
 	// e.GET("/User", controller.UserController.FindUser)
 	admin := e.Group("/administrators")
