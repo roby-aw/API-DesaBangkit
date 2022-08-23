@@ -3,7 +3,9 @@ package user
 import (
 	userBusiness "api-desatanggap/business/user"
 	"api-desatanggap/utils"
+	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/labstack/echo/v4"
 )
@@ -19,9 +21,16 @@ func NewController(service userBusiness.Service) *Controller {
 }
 
 func (Controller *Controller) RegisterAccount(c echo.Context) error {
+	var wg sync.WaitGroup
+	wg.Add(1)
 	Data := userBusiness.RegAccount{}
 	c.Bind(&Data)
-	_, err := Controller.service.CreateAccount(&Data)
+	var err error
+	go func() {
+		defer wg.Done()
+		_, err = Controller.service.CreateAccount(&Data)
+	}()
+	wg.Wait()
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"code":     400,
@@ -100,7 +109,16 @@ func (Controller *Controller) UploadPhoto(c echo.Context) error {
 	})
 }
 func (Controller *Controller) GetRole(c echo.Context) error {
-	result, err := Controller.service.GetRole()
+	var wg sync.WaitGroup
+	wg.Add(1)
+	var err error
+	var result []*userBusiness.Role
+	go func() {
+		defer wg.Done()
+		fmt.Println(wg)
+		result, err = Controller.service.GetRole()
+	}()
+	wg.Wait()
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"code":     400,
@@ -136,5 +154,35 @@ func (Controller *Controller) VerificationAccount(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"code":     200,
 		"messages": "success verification account",
+	})
+}
+
+func (Controller *Controller) DeleteUser(c echo.Context) error {
+	email := c.QueryParam("email")
+	err := Controller.service.DeleteUser(email)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"code":     400,
+			"messages": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success delete user",
+	})
+}
+
+func (Controller *Controller) SendVerification(c echo.Context) error {
+	email := c.QueryParam("email")
+	err := Controller.service.SendVerification(email)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"code":     400,
+			"messages": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success send verification",
 	})
 }

@@ -130,12 +130,18 @@ func (repo *MongoDBRepository) GetRole() ([]*user.Role, error) {
 	return Role, err
 }
 
-func (repo *MongoDBRepository) SendVerification(email string) (*string, error) {
+func (repo *MongoDBRepository) SendVerification(email string) error {
+	var tmpAcc repository.Account
+	err := repo.col.FindOne(context.Background(), bson.M{"email": email}).Decode(&tmpAcc)
+	if err != nil {
+		return errors.New("Email Not Registered")
+	}
 	codeotp, err := utils.InitEmail(email)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return &codeotp, nil
+	err = repo.CreateCodeOtp(email, codeotp)
+	return nil
 }
 
 func (repo *MongoDBRepository) ValidationEmail(Data string) error {
@@ -148,6 +154,19 @@ func (repo *MongoDBRepository) CreateCodeOtp(email string, codeotp string) error
 		Email:      email,
 		Code:       codeotp,
 		Expired_at: timeExpired,
+	}
+	var tmpAcc repository.CodeOtp
+	repo.colCode.FindOne(context.Background(), bson.M{"email": email}).Decode(&tmpAcc)
+	if tmpAcc.Email != "" {
+		filter := bson.M{"email": email}
+		update := bson.M{
+			"$set": bson.M{
+				"code":       codeotp,
+				"expired_at": timeExpired,
+			},
+		}
+		repo.colCode.UpdateOne(context.Background(), filter, update)
+		return nil
 	}
 	_, err := repo.colCode.InsertOne(context.Background(), InsertCode)
 	if err != nil {
@@ -168,6 +187,15 @@ func (repo *MongoDBRepository) VerificationAccount(code string) error {
 	_, err = repo.col.UpdateOne(context.Background(), filter, bson.M{"$set": update})
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (repo *MongoDBRepository) DeleteUser(email string) error {
+	filter := bson.M{"email": email}
+	err := repo.col.FindOneAndDelete(context.Background(), filter).Err()
+	if err != nil {
+		return errors.New("Data Not Found")
 	}
 	return nil
 }

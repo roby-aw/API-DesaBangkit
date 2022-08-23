@@ -15,10 +15,11 @@ type Repository interface {
 	Createcustomer(Data *Regcustomer) (*Regcustomer, error)
 	Findcustomer() ([]Customer, error)
 	GetRole() ([]*Role, error)
-	SendVerification(email string) (*string, error)
+	SendVerification(email string) error
 	ValidationEmail(Data string) error
 	CreateCodeOtp(Email, Code string) error
 	VerificationAccount(code string) error
+	DeleteUser(email string) error
 }
 
 type Service interface {
@@ -27,9 +28,10 @@ type Service interface {
 	CreateAccount(Data *RegAccount) (*Account, error)
 	Findcustomer() ([]Customer, error)
 	GetRole() ([]*Role, error)
-	SendVerification(email string) (*string, error)
+	SendVerification(email string) error
 	ValidationEmail(Data string) error
 	VerificationAccount(code string) error
+	DeleteUser(email string) error
 }
 
 type service struct {
@@ -58,15 +60,10 @@ func (s *service) CreateAccount(Data *RegAccount) (*Account, error) {
 	if err != nil {
 		return nil, err
 	}
-	code, err := s.repository.SendVerification(Data.Email)
+	err = s.repository.SendVerification(Data.Email)
 	if err != nil {
 		return nil, err
 	}
-	err = s.repository.CreateCodeOtp(Data.Email, *code)
-	// err = s.ValidationEmail(result.Email)
-	// if err != nil {
-	// 	return nil, err
-	// }
 	return result, nil
 }
 
@@ -110,7 +107,7 @@ func (s *service) GetRole() ([]*Role, error) {
 	return s.repository.GetRole()
 }
 
-func (s *service) SendVerification(email string) (*string, error) {
+func (s *service) SendVerification(email string) error {
 	return s.repository.SendVerification(email)
 }
 
@@ -128,4 +125,8 @@ func (s *service) VerificationAccount(code string) error {
 		return errors.New("wrong code")
 	}
 	return s.repository.VerificationAccount(string(data))
+}
+
+func (s *service) DeleteUser(email string) error {
+	return s.repository.DeleteUser(email)
 }
