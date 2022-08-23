@@ -177,13 +177,14 @@ func (repo *MongoDBRepository) CreateCodeOtp(email string, codeotp string) error
 
 func (repo *MongoDBRepository) VerificationAccount(code string) error {
 	var codeotp repository.CodeOtp
-	err := repo.colCode.FindOneAndDelete(context.Background(), bson.M{"code": code}).Decode(&codeotp)
+	err := repo.colCode.FindOne(context.Background(), bson.M{"code": code}).Decode(&codeotp)
 	if err != nil {
 		return errors.New("Code Not Found")
 	}
 	if codeotp.Expired_at.Before(time.Now()) {
 		return errors.New("Code Expired")
 	}
+	repo.colCode.DeleteOne(context.Background(), bson.M{"code": code})
 	filter := bson.M{"email": codeotp.Email}
 	update := bson.M{"isverified": true}
 	_, err = repo.col.UpdateOne(context.Background(), filter, bson.M{"$set": update})
