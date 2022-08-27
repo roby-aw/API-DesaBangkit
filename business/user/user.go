@@ -85,6 +85,8 @@ type Product struct {
 	Category       string             `json:"category" bson:"category,omitempty"`
 	DeliveryOption string             `json:"delivery_option" bson:"delivery_option,omitempty"`
 	Cooperationid  primitive.ObjectID `json:"cooperationid" bson:"cooperationid,omitempty"`
+	Latitude       string             `json:"latitude" bson:"latitude,omitempty"`
+	Longitude      string             `json:"longitude" bson:"longitude,omitempty"`
 	UserID         primitive.ObjectID `json:"userid" bson:"userid,omitempty"`
 	UserAddress    string             `json:"user_address" bson:"user_address,omitempty"`
 	IsPreorder     bool               `json:"is_preorder" bson:"is_preorder,omitempty"`
@@ -101,6 +103,8 @@ type InputProduct struct {
 	Category       string    `json:"category" bson:"category,omitempty"`
 	DeliveryOption string    `json:"delivery_option" bson:"delivery_option,omitempty"`
 	Cooperationid  string    `json:"cooperationid" bson:"cooperationid,omitempty"`
+	Latitude       string    `json:"latitude" bson:"latitude,omitempty"`
+	Longitude      string    `json:"longitude" bson:"longitude,omitempty"`
 	UserID         string    `json:"userid" bson:"userid,omitempty"`
 	UserAddress    string    `json:"user_address" bson:"user_address,omitempty"`
 	IsPreorder     bool      `json:"is_preorder" bson:"is_preorder,omitempty"`
