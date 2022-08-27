@@ -3,11 +3,17 @@ package user
 import (
 	userBusiness "api-desatanggap/business/user"
 	"api-desatanggap/utils"
+	"context"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"sync"
+	"time"
 
+	"cloud.google.com/go/storage"
 	"github.com/labstack/echo/v4"
+	"google.golang.org/api/option"
 )
 
 type Controller struct {
@@ -115,7 +121,6 @@ func (Controller *Controller) GetRole(c echo.Context) error {
 	var result []*userBusiness.Role
 	go func() {
 		defer wg.Done()
-		fmt.Println(wg)
 		result, err = Controller.service.GetRole()
 	}()
 	wg.Wait()
@@ -186,3 +191,96 @@ func (Controller *Controller) SendVerification(c echo.Context) error {
 		"messages": "success send verification",
 	})
 }
+
+var storageClient storage.Client
+
+func (Controller *Controller) UploadFileHandle(c echo.Context) error {
+	f, err := c.FormFile("file")
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"error": err.Error(),
+		})
+
+	}
+
+	blobFile, err := f.Open()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"error": err.Error(),
+		})
+
+	}
+
+	err = Controller.UploadFile(blobFile, f.Filename)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"error": err.Error(),
+		})
+
+	}
+
+	c.JSON(200, map[string]interface{}{
+		"message": "success",
+	})
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success upload",
+	})
+}
+
+// UploadFile uploads an object
+func (Controller *Controller) UploadFile(file multipart.File, object string) error {
+	c, err := storage.NewClient(context.Background(), option.WithCredentialsFile("key.json"))
+	if err != nil {
+		return err
+	}
+	ctx := context.Background()
+	bucket := "desabangkit-bucket"
+
+	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
+	defer cancel()
+
+	// Upload an object with storage.Writer.
+	wc := c.Bucket(bucket).Object(object).NewWriter(ctx)
+	if _, err := io.Copy(wc, file); err != nil {
+		return fmt.Errorf("io.Copy: %v", err)
+	}
+	if err := wc.Close(); err != nil {
+		return fmt.Errorf("Writer.Close: %v", err)
+	}
+
+	return nil
+}
+
+// ctx := appengine.NewContext(c.Request())
+
+// storageClient, err := storage.NewClient(ctx, option.WithCredentialsFile("key.json"))
+// if err != nil {
+// 	return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+// 		"message": "Something went wrong",
+// 		"error":   err.Error(),
+// 	})
+// }
+// file, err := c.FormFile("file")
+// fmt.Println(file.Filename)
+// if err != nil {
+// 	return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+// 		"message": "Something went wrong",
+// 		"error":   err.Error(),
+// 	})
+// }
+
+// sw := storageClient.Bucket(bucket).Object(file.Filename).NewWriter(ctx)
+// // sw.
+// u, err := url.Parse("/" + bucket + "/" + sw.Attrs().Name)
+// fmt.Println(u.String())
+// if err != nil {
+// 	return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+// 		"message": "Something went wrong",
+// 		"error":   err.Error(),
+// 	})
+// }
+// return c.JSON(http.StatusOK, map[string]interface{}{
+// 	"message": "File uploaded successfully",
+// 	"url":     sw,
+// })
