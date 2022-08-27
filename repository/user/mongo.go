@@ -225,6 +225,8 @@ func (repo *MongoDBRepository) InputProduct(Data *user.InputProduct) error {
 		Name:           Data.Name,
 		PriceExpected:  Data.PriceExpected,
 		Quantity:       Data.Quantity,
+		Latitude:       Data.Latitude,
+		Longitude:      Data.Longitude,
 		Category:       Data.Category,
 		DeliveryOption: Data.DeliveryOption,
 		Cooperationid:  CooperationID,
