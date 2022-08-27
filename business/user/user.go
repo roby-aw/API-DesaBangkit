@@ -64,11 +64,6 @@ type ResLogin struct {
 	Token   string  `json:"token"`
 }
 
-type Jurusan struct {
-	ID   string `json:"id"`
-	Nama string `json:"nama"`
-}
-
 type Hobi struct {
 	ID   int    `gorm:"primarykey" json:"id"`
 	Nama string `json:"nama"`
@@ -78,4 +73,37 @@ type CodeOtp struct {
 	Email      string    `json:"email" bson:"email,omitempty"`
 	Code       string    `json:"code" bson:"code,omitempty"`
 	Expired_at time.Time `json:"expired_at" bson:"expired_at,omitempty"`
+}
+
+type Product struct {
+	ID             primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	SKU            string             `json:"sku" bson:"sku,omitempty"`
+	Photo_url      string             `json:"photo_url" bson:"photo_url,omitempty"`
+	Name           string             `json:"name" bson:"name,omitempty"`
+	PriceExpected  int                `json:"price_expected" bson:"price_expected,omitempty"`
+	Quantity       int                `json:"Quantity" bson:"Quantity,omitempty"`
+	Category       string             `json:"category" bson:"category,omitempty"`
+	DeliveryOption string             `json:"delivery_option" bson:"delivery_option,omitempty"`
+	Cooperationid  primitive.ObjectID `json:"cooperationid" bson:"cooperationid,omitempty"`
+	UserID         primitive.ObjectID `json:"userid" bson:"userid,omitempty"`
+	UserAddress    string             `json:"user_address" bson:"user_address,omitempty"`
+	IsPreorder     bool               `json:"is_preorder" bson:"is_preorder,omitempty"`
+	IsApproved     bool               `json:"is_approved" bson:"is_approved,omitempty"`
+	Created_at     time.Time          `json:"created_at" bson:"created_at,omitempty"`
+}
+
+type InputProduct struct {
+	SKU            string    `json:"sku" bson:"sku,omitempty"`
+	Photo_url      string    `json:"photo_url" bson:"photo_url,omitempty"`
+	Name           string    `json:"name" bson:"name,omitempty"`
+	PriceExpected  int       `json:"price_expected" bson:"price_expected,omitempty"`
+	Quantity       int       `json:"Quantity" bson:"Quantity,omitempty"`
+	Category       string    `json:"category" bson:"category,omitempty"`
+	DeliveryOption string    `json:"delivery_option" bson:"delivery_option,omitempty"`
+	Cooperationid  string    `json:"cooperationid" bson:"cooperationid,omitempty"`
+	UserID         string    `json:"userid" bson:"userid,omitempty"`
+	UserAddress    string    `json:"user_address" bson:"user_address,omitempty"`
+	IsPreorder     bool      `json:"is_preorder" bson:"is_preorder,omitempty"`
+	IsApproved     bool      `json:"is_approved" bson:"is_approved,omitempty"`
+	Created_at     time.Time `json:"created_at" bson:"created_at,omitempty"`
 }

@@ -20,6 +20,7 @@ type MongoDBRepository struct {
 	col     *mongo.Collection
 	colRole *mongo.Collection
 	colCode *mongo.Collection
+	colProd *mongo.Collection
 }
 
 func NewMongoRepository(col *mongo.Database) *MongoDBRepository {
@@ -27,6 +28,7 @@ func NewMongoRepository(col *mongo.Database) *MongoDBRepository {
 		col:     col.Collection("users"),
 		colRole: col.Collection("roles_user"),
 		colCode: col.Collection("code_otp"),
+		colProd: col.Collection("products"),
 	}
 }
 
@@ -200,5 +202,38 @@ func (repo *MongoDBRepository) DeleteUser(email string) error {
 	if err != nil {
 		return errors.New("Data Not Found")
 	}
+	return nil
+}
+
+func (repo *MongoDBRepository) InputProduct(Data *user.InputProduct) error {
+	fmt.Println("masuk")
+	fmt.Println(Data)
+	CooperationID, err := primitive.ObjectIDFromHex(Data.Cooperationid)
+	if err != nil {
+		return err
+	}
+	UserID, err := primitive.ObjectIDFromHex(Data.UserID)
+	if err != nil {
+		return err
+	}
+
+	random := utils.RandomCapitalNumber(10)
+
+	insertProd := &user.Product{
+		SKU:            *random,
+		Photo_url:      Data.Photo_url,
+		Name:           Data.Name,
+		PriceExpected:  Data.PriceExpected,
+		Quantity:       Data.Quantity,
+		Category:       Data.Category,
+		DeliveryOption: Data.DeliveryOption,
+		Cooperationid:  CooperationID,
+		UserID:         UserID,
+		UserAddress:    Data.UserAddress,
+		IsPreorder:     Data.IsPreorder,
+		IsApproved:     Data.IsApproved,
+		Created_at:     time.Now(),
+	}
+	repo.colProd.InsertOne(context.Background(), &insertProd)
 	return nil
 }

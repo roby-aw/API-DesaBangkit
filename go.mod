@@ -8,7 +8,10 @@ require (
 	github.com/spf13/viper v1.11.0
 )
 
-require golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
+require (
+	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
+	google.golang.org/api v0.88.0
+)
 
 require (
 	cloud.google.com/go v0.102.1 // indirect
@@ -36,7 +39,6 @@ require (
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
-	google.golang.org/api v0.88.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220720214146-176da50484ac // indirect
 	google.golang.org/grpc v1.48.0 // indirect

@@ -8,6 +8,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -210,27 +211,28 @@ func (Controller *Controller) UploadFileHandle(c echo.Context) error {
 		})
 
 	}
+	ranstr := utils.RandomString(10)
+	f.Filename = *ranstr + ".png"
 
 	err = Controller.UploadFile(blobFile, f.Filename)
+	photo_url := "https://storage.googleapis.com/desabangkit-bucket/" + f.Filename
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"error": err.Error(),
 		})
 
 	}
-
-	c.JSON(200, map[string]interface{}{
-		"message": "success",
-	})
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"code":     200,
 		"messages": "success upload",
+		"result":   photo_url,
 	})
 }
 
 // UploadFile uploads an object
 func (Controller *Controller) UploadFile(file multipart.File, object string) error {
-	c, err := storage.NewClient(context.Background(), option.WithCredentialsFile("key.json"))
+	key_google := os.Getenv("Key_google")
+	c, err := storage.NewClient(context.Background(), option.WithCredentialsJSON([]byte(key_google)))
 	if err != nil {
 		return err
 	}
@@ -284,3 +286,19 @@ func (Controller *Controller) UploadFile(file multipart.File, object string) err
 // 	"message": "File uploaded successfully",
 // 	"url":     sw,
 // })
+
+func (Controller *Controller) CreateProduct(c echo.Context) error {
+	product := userBusiness.InputProduct{}
+	c.Bind(&product)
+	err := Controller.service.InputProduct(&product)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"code":     400,
+			"messages": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success create product",
+	})
+}

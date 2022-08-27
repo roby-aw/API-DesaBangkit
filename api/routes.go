@@ -25,6 +25,7 @@ func RegistrationPath(e *echo.Echo, controller Controller) {
 	acc.POST("/login", controller.UserController.LoginAccount)
 	acc.POST("/registrations", controller.UserController.RegisterAccount)
 	acc.GET("/role", controller.UserController.GetRole)
+	acc.POST("/products", controller.UserController.CreateProduct)
 	acc.POST("/verification-account", controller.UserController.VerificationAccount)
 	e.POST("/upload", controller.UserController.UploadFileHandle)
 	acc.GET("/test", controller.UserController.GetRole, middleware.JWTMiddleware())
