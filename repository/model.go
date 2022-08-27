@@ -64,3 +64,11 @@ type Product struct {
 	IsApproved     bool               `json:"is_approved" bson:"is_approved"`
 	Created_at     time.Time          `json:"created_at" bson:"created_at,omitempty"`
 }
+
+type InputProductTransaction struct {
+	Status     string             `json:"status" bson:"status,omitempty"`
+	Productid  primitive.ObjectID `json:"productid" bson:"productid,omitempty"`
+	Userid     primitive.ObjectID `json:"userid" bson:"userid,omitempty"`
+	Amount     int                `json:"amount" bson:"amount,omitempty"`
+	Created_at time.Time          `json:"created_at" bson:"created_at,omitempty"`
+}

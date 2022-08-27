@@ -21,6 +21,10 @@ type Repository interface {
 	VerificationAccount(code string) error
 	DeleteUser(email string) error
 	InputProduct(InsertProduct *InputProduct, preorder string) error
+	GetProductByIdAccount(id string) ([]Product, error)
+	GetProductByAccStatus(approved *bool, verified *bool, id string) ([]Product, error)
+	InsertProductTransaction(InsertProduct *InputProductTransaction) error
+	GetProductTranscationByIDUser(id string) ([]ProductTransaction, error)
 }
 
 type Service interface {
@@ -34,6 +38,10 @@ type Service interface {
 	VerificationAccount(code string) error
 	DeleteUser(email string) error
 	InputProduct(InsertProduct *InputProduct, preorder string) error
+	GetProductByIdAccount(id string) ([]Product, error)
+	GetProductByIdAccStatus(approved *bool, verified *bool, id string) ([]Product, error)
+	InsertProductTransaction(InsertProduct *InputProductTransaction) error
+	GetProductTranscationByIDUser(id string) ([]ProductTransaction, error)
 }
 
 type service struct {
@@ -135,4 +143,34 @@ func (s *service) DeleteUser(email string) error {
 
 func (s *service) InputProduct(InsertProduct *InputProduct, preorder string) error {
 	return s.repository.InputProduct(InsertProduct, preorder)
+}
+
+func (s *service) GetProductByIdAccount(id string) ([]Product, error) {
+	return s.repository.GetProductByIdAccount(id)
+}
+
+func (s *service) GetProductByIdAccStatus(approved *bool, verified *bool, id string) ([]Product, error) {
+	var Data []Product
+	var err error
+	if approved != nil {
+		Data, err = s.repository.GetProductByAccStatus(approved, nil, id)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if verified != nil {
+		Data, err = s.repository.GetProductByAccStatus(nil, verified, id)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return Data, nil
+}
+
+func (s *service) InsertProductTransaction(InsertProduct *InputProductTransaction) error {
+	return s.repository.InsertProductTransaction(InsertProduct)
+}
+
+func (s *service) GetProductTranscationByIDUser(id string) ([]ProductTransaction, error) {
+	return s.repository.GetProductTranscationByIDUser(id)
 }

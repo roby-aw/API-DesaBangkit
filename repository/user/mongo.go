@@ -17,18 +17,20 @@ import (
 )
 
 type MongoDBRepository struct {
-	col     *mongo.Collection
-	colRole *mongo.Collection
-	colCode *mongo.Collection
-	colProd *mongo.Collection
+	col          *mongo.Collection
+	colRole      *mongo.Collection
+	colCode      *mongo.Collection
+	colProd      *mongo.Collection
+	colProdTrans *mongo.Collection
 }
 
 func NewMongoRepository(col *mongo.Database) *MongoDBRepository {
 	return &MongoDBRepository{
-		col:     col.Collection("users"),
-		colRole: col.Collection("roles_user"),
-		colCode: col.Collection("code_otp"),
-		colProd: col.Collection("products"),
+		col:          col.Collection("users"),
+		colRole:      col.Collection("roles_user"),
+		colCode:      col.Collection("code_otp"),
+		colProd:      col.Collection("products"),
+		colProdTrans: col.Collection("products_transaction"),
 	}
 }
 
@@ -242,4 +244,183 @@ func (repo *MongoDBRepository) InputProduct(Data *user.InputProduct, preorder st
 	}
 	repo.colProd.InsertOne(context.Background(), &insertProd)
 	return nil
+}
+
+func (repo *MongoDBRepository) GetProductByIdAccount(id string) ([]user.Product, error) {
+	var Product []user.Product
+	UserID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	filter := bson.A{
+		bson.M{
+			"$match": bson.M{
+				"userid": UserID,
+			},
+		},
+		bson.M{
+			"$lookup": bson.M{
+				"from":         "users",
+				"localField":   "userid",
+				"foreignField": "_id",
+				"as":           "account",
+			},
+		},
+		bson.M{
+			"$unwind": "$account",
+		},
+		bson.M{
+			"$lookup": bson.M{
+				"from":         "roles_user",
+				"localField":   "account.role_id",
+				"foreignField": "_id",
+				"as":           "account.roles",
+			},
+		},
+	}
+	fmt.Println(id, UserID)
+
+	cur, err := repo.colProd.Aggregate(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+	for cur.Next(context.TODO()) {
+		var elem user.Product
+		err := cur.Decode(&elem)
+		if err != nil {
+			return nil, err
+		}
+		Product = append(Product, elem)
+	}
+
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+	return Product, err
+}
+
+func (repo *MongoDBRepository) GetProductByAccStatus(approved *bool, verified *bool, id string) ([]user.Product, error) {
+	var Product []user.Product
+	UserID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	filter := bson.A{
+		bson.M{
+			"$match": bson.M{
+				"userid": UserID,
+			},
+		},
+		bson.M{
+			"$lookup": bson.M{
+				"from":         "users",
+				"localField":   "userid",
+				"foreignField": "_id",
+				"as":           "account",
+			},
+		},
+		bson.M{
+			"$unwind": "$account",
+		},
+		bson.M{
+			"$lookup": bson.M{
+				"from":         "roles_user",
+				"localField":   "account.role_id",
+				"foreignField": "_id",
+				"as":           "account.roles",
+			},
+		},
+	}
+	if approved != nil {
+		filter = append(filter, bson.M{
+			"$match": bson.M{
+				"is_approved": *approved,
+			},
+		})
+	}
+	if verified != nil {
+		filter = append(filter, bson.M{
+			"$match": bson.M{
+				"is_preorder": *verified,
+			},
+		})
+	}
+
+	cur, err := repo.colProd.Aggregate(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+	for cur.Next(context.TODO()) {
+		var elem user.Product
+		err := cur.Decode(&elem)
+		if err != nil {
+			return nil, err
+		}
+		Product = append(Product, elem)
+	}
+	return Product, nil
+}
+
+func (repo *MongoDBRepository) InsertProductTransaction(InsertProduct *user.InputProductTransaction) error {
+	UserID, err := primitive.ObjectIDFromHex(InsertProduct.Userid)
+	if err != nil {
+		return err
+	}
+	ProductID, err := primitive.ObjectIDFromHex(InsertProduct.Productid)
+	if err != nil {
+		return err
+	}
+	insertProd := &repository.InputProductTransaction{
+		Userid:     UserID,
+		Productid:  ProductID,
+		Status:     InsertProduct.Status,
+		Amount:     InsertProduct.Amount,
+		Created_at: time.Now(),
+	}
+	repo.colProdTrans.InsertOne(context.Background(), &insertProd)
+	return nil
+}
+
+func (repo *MongoDBRepository) GetProductTranscationByIDUser(id string) ([]user.ProductTransaction, error) {
+	var Product []user.ProductTransaction
+	UserID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	filter := bson.A{
+		bson.M{
+			"$match": bson.M{
+				"userid": UserID,
+			},
+		},
+		bson.M{
+			"$lookup": bson.M{
+				"from":         "products",
+				"localField":   "productid",
+				"foreignField": "_id",
+				"as":           "product",
+			},
+		},
+		bson.M{
+			"$lookup": bson.M{
+				"from":         "users",
+				"localField":   "userid",
+				"foreignField": "_id",
+				"as":           "account",
+			},
+		},
+	}
+	cur, err := repo.colProdTrans.Aggregate(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+	for cur.Next(context.TODO()) {
+		var elem user.ProductTransaction
+		err := cur.Decode(&elem)
+		if err != nil {
+			return nil, err
+		}
+		Product = append(Product, elem)
+	}
+	return Product, nil
 }

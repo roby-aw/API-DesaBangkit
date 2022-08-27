@@ -9,6 +9,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 
@@ -301,5 +302,78 @@ func (Controller *Controller) CreateProduct(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"code":     200,
 		"messages": "success create product",
+	})
+}
+
+func (Controller *Controller) GetProductByIdAccount(c echo.Context) error {
+	id := c.QueryParam("id")
+	product, err := Controller.service.GetProductByIdAccount(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"code":     400,
+			"messages": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success get product",
+		"result":   product,
+	})
+}
+
+func (Controller *Controller) GetProductByIdAccStatus(c echo.Context) error {
+	id := c.QueryParam("id")
+	approved := c.QueryParam("approved")
+	var appr, ver bool
+	if approved != "" {
+		appr, _ = strconv.ParseBool(approved)
+	}
+	verified := c.QueryParam("verified")
+	if verified != "" {
+		ver, _ = strconv.ParseBool(verified)
+	}
+	product, err := Controller.service.GetProductByIdAccStatus(&appr, &ver, id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"code":     400,
+			"messages": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success get product",
+		"result":   product,
+	})
+}
+
+func (Controller *Controller) PostProductTransaction(c echo.Context) error {
+	product := userBusiness.InputProductTransaction{}
+	c.Bind(&product)
+	err := Controller.service.InsertProductTransaction(&product)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"code":     400,
+			"messages": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success transaction product",
+	})
+}
+
+func (Controller *Controller) GetProductTransactionByIDUser(c echo.Context) error {
+	id := c.QueryParam("id")
+	product, err := Controller.service.GetProductTranscationByIDUser(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"code":     400,
+			"messages": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success get product",
+		"result":   product,
 	})
 }
