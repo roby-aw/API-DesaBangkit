@@ -20,12 +20,14 @@ import (
 type MongoDBRepository struct {
 	col     *mongo.Collection
 	colRole *mongo.Collection
+	colCoop *mongo.Collection
 }
 
 func NewMongoRepository(col *mongo.Database) *MongoDBRepository {
 	return &MongoDBRepository{
 		col:     col.Collection("admin"),
 		colRole: col.Collection("roles_admin"),
+		colCoop: col.Collection("cooperation"),
 	}
 }
 
@@ -124,7 +126,7 @@ func (repo *MongoDBRepository) CreateCooperation(Data *admin.RegCooperation) (*a
 		Password:   Data.Password,
 		Created_at: time.Now(),
 	}
-	result, err := repo.col.InsertOne(context.Background(), InsertData)
+	result, err := repo.colCoop.InsertOne(context.Background(), InsertData)
 	var tmpCooperation admin.Cooperation
 	data, _ := json.Marshal(Data)
 	err = json.Unmarshal(data, &tmpCooperation)

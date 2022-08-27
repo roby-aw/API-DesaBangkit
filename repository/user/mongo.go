@@ -205,9 +205,7 @@ func (repo *MongoDBRepository) DeleteUser(email string) error {
 	return nil
 }
 
-func (repo *MongoDBRepository) InputProduct(Data *user.InputProduct) error {
-	fmt.Println("masuk")
-	fmt.Println(Data)
+func (repo *MongoDBRepository) InputProduct(Data *user.InputProduct, preorder string) error {
 	CooperationID, err := primitive.ObjectIDFromHex(Data.Cooperationid)
 	if err != nil {
 		return err
@@ -216,10 +214,16 @@ func (repo *MongoDBRepository) InputProduct(Data *user.InputProduct) error {
 	if err != nil {
 		return err
 	}
+	var IsPreorder bool
+	if preorder == "true" {
+		IsPreorder = true
+	} else {
+		IsPreorder = false
+	}
 
-	random := utils.RandomCapitalNumber(10)
+	random := utils.RandomCapitalNumber(14)
 
-	insertProd := &user.Product{
+	insertProd := &repository.Product{
 		SKU:            *random,
 		Photo_url:      Data.Photo_url,
 		Name:           Data.Name,
@@ -232,8 +236,8 @@ func (repo *MongoDBRepository) InputProduct(Data *user.InputProduct) error {
 		Cooperationid:  CooperationID,
 		UserID:         UserID,
 		UserAddress:    Data.UserAddress,
-		IsPreorder:     Data.IsPreorder,
-		IsApproved:     Data.IsApproved,
+		IsPreorder:     IsPreorder,
+		IsApproved:     false,
 		Created_at:     time.Now(),
 	}
 	repo.colProd.InsertOne(context.Background(), &insertProd)

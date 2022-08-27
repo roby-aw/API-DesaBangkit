@@ -288,9 +288,10 @@ func (Controller *Controller) UploadFile(file multipart.File, object string) err
 // })
 
 func (Controller *Controller) CreateProduct(c echo.Context) error {
+	preorder := c.QueryParam("preorder")
 	product := userBusiness.InputProduct{}
 	c.Bind(&product)
-	err := Controller.service.InputProduct(&product)
+	err := Controller.service.InputProduct(&product, preorder)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"code":     400,

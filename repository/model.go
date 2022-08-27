@@ -45,3 +45,22 @@ type CodeOtp struct {
 	Code       string    `json:"code" bson:"code,omitempty"`
 	Expired_at time.Time `json:"expired_at" bson:"expired_at,omitempty"`
 }
+
+type Product struct {
+	ID             primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	SKU            string             `json:"sku" bson:"sku,omitempty"`
+	Photo_url      string             `json:"photo_url" bson:"photo_url,omitempty"`
+	Name           string             `json:"name" bson:"name,omitempty"`
+	PriceExpected  int                `json:"price_expected" bson:"price_expected,omitempty"`
+	Quantity       int                `json:"Quantity" bson:"Quantity,omitempty"`
+	Category       string             `json:"category" bson:"category,omitempty"`
+	DeliveryOption string             `json:"delivery_option" bson:"delivery_option,omitempty"`
+	Cooperationid  primitive.ObjectID `json:"cooperationid" bson:"cooperationid,omitempty"`
+	Latitude       string             `json:"latitude" bson:"latitude,omitempty"`
+	Longitude      string             `json:"longitude" bson:"longitude,omitempty"`
+	UserID         primitive.ObjectID `json:"userid" bson:"userid,omitempty"`
+	UserAddress    string             `json:"user_address" bson:"user_address,omitempty"`
+	IsPreorder     bool               `json:"is_preorder" bson:"is_preorder"`
+	IsApproved     bool               `json:"is_approved" bson:"is_approved"`
+	Created_at     time.Time          `json:"created_at" bson:"created_at,omitempty"`
+}

@@ -36,8 +36,8 @@ type Account struct {
 	Fullname   string             `bson:"fullname,omitempty" binding:"required"`
 	Password   string             `bson:"password,omitempty" binding:"required"`
 	Role_id    primitive.ObjectID `bson:"role_id,omitempty" binding:"required"`
-	IsVerified bool               `bson:"isverified"`
-	Roles      []Role             `bson:"roles" json:"roles"`
+	IsVerified bool               `bson:"isverified,omitempty"`
+	Roles      []Role             `bson:"roles,omitempty" json:"roles"`
 }
 
 type Role struct {
@@ -108,8 +108,6 @@ type InputProduct struct {
 	Longitude      string    `json:"longitude" bson:"longitude,omitempty"`
 	UserID         string    `json:"userid" bson:"userid,omitempty"`
 	UserAddress    string    `json:"user_address" bson:"user_address,omitempty"`
-	IsPreorder     bool      `json:"is_preorder" bson:"is_preorder,omitempty"`
-	IsApproved     bool      `json:"is_approved" bson:"is_approved,omitempty"`
 	Created_at     time.Time `json:"created_at" bson:"created_at,omitempty"`
 }
 

@@ -20,7 +20,7 @@ type Repository interface {
 	CreateCodeOtp(Email, Code string) error
 	VerificationAccount(code string) error
 	DeleteUser(email string) error
-	InputProduct(InsertProduct *InputProduct) error
+	InputProduct(InsertProduct *InputProduct, preorder string) error
 }
 
 type Service interface {
@@ -33,7 +33,7 @@ type Service interface {
 	ValidationEmail(Data string) error
 	VerificationAccount(code string) error
 	DeleteUser(email string) error
-	InputProduct(InsertProduct *InputProduct) error
+	InputProduct(InsertProduct *InputProduct, preorder string) error
 }
 
 type service struct {
@@ -133,6 +133,6 @@ func (s *service) DeleteUser(email string) error {
 	return s.repository.DeleteUser(email)
 }
 
-func (s *service) InputProduct(InsertProduct *InputProduct) error {
-	return s.repository.InputProduct(InsertProduct)
+func (s *service) InputProduct(InsertProduct *InputProduct, preorder string) error {
+	return s.repository.InputProduct(InsertProduct, preorder)
 }
