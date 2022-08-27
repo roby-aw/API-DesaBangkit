@@ -109,3 +109,29 @@ func (repo *MongoDBRepository) GetRole() ([]*admin.Role, error) {
 	cur.All(context.Background(), &Role)
 	return Role, nil
 }
+
+func (repo *MongoDBRepository) CreateCooperation(Data *admin.RegCooperation) (*admin.Cooperation, error) {
+	InsertData := &admin.Cooperation{
+		Name:       Data.Name,
+		Address:    Data.Address,
+		City:       Data.City,
+		Province:   Data.Province,
+		Latitude:   Data.Latitude,
+		Longitude:  Data.Longitude,
+		Photo_url:  Data.Photo_url,
+		Email:      Data.Email,
+		Username:   Data.Username,
+		Password:   Data.Password,
+		Created_at: time.Now(),
+	}
+	result, err := repo.col.InsertOne(context.Background(), InsertData)
+	var tmpCooperation admin.Cooperation
+	data, _ := json.Marshal(Data)
+	err = json.Unmarshal(data, &tmpCooperation)
+	if err != nil {
+		return nil, err
+	}
+	id, err := primitive.ObjectIDFromHex(fmt.Sprintf("%s", result.InsertedID))
+	tmpCooperation.ID = id
+	return &tmpCooperation, nil
+}

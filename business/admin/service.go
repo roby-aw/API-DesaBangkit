@@ -12,12 +12,14 @@ type Repository interface {
 	FindAdminByUsername(username string) (*Admin, error)
 	CreateToken(Data *Admin) (*string, error)
 	GetRole() ([]*Role, error)
+	CreateCooperation(Data *RegCooperation) (*Cooperation, error)
 }
 type Service interface {
 	CreateAdmin(Data *RegAdmin) (*Admin, error)
 	FindAdminByUsername(username string) (*Admin, error)
 	LoginAdmin(auth *AuthLogin) (*ResponseLogin, error)
 	GetRole() ([]*Role, error)
+	CreateCooperation(Data *RegCooperation) (*Cooperation, error)
 }
 
 type service struct {
@@ -63,4 +65,8 @@ func (s *service) LoginAdmin(auth *AuthLogin) (*ResponseLogin, error) {
 
 func (s *service) GetRole() ([]*Role, error) {
 	return s.repository.GetRole()
+}
+
+func (s *service) CreateCooperation(Data *RegCooperation) (*Cooperation, error) {
+	return s.repository.CreateCooperation(Data)
 }

@@ -1,6 +1,8 @@
 package admin
 
 import (
+	"time"
+
 	"github.com/golang-jwt/jwt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -43,4 +45,34 @@ type Claims struct {
 	Email    string
 	Role     string
 	jwt.StandardClaims
+}
+
+type Cooperation struct {
+	ID         primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Name       string             `json:"name" bson:"name,omitempty"`
+	Address    string             `json:"address" bson:"address,omitempty"`
+	City       string             `json:"city" bson:"city,omitempty"`
+	Province   string             `json:"province" bson:"province,omitempty"`
+	Latitude   string             `json:"latitude" bson:"latitude,omitempty"`
+	Longitude  string             `json:"longitude" bson:"longitude,omitempty"`
+	Photo_url  string             `json:"photo_url" bson:"photo_url,omitempty"`
+	Email      string             `json:"email" bson:"email,omitempty"`
+	Username   string             `json:"username" bson:"username,omitempty"`
+	Password   string             `json:"password" bson:"password,omitempty"`
+	Created_at time.Time          `json:"created_at" bson:"created_at,omitempty"`
+}
+
+type RegCooperation struct {
+	Name       string             `json:"name" bson:"name,omitempty"`
+	Address    string             `json:"address" bson:"address,omitempty"`
+	City       string             `json:"city" bson:"city,omitempty"`
+	Province   string             `json:"province" bson:"province,omitempty"`
+	Latitude   string             `json:"latitude" bson:"latitude,omitempty"`
+	Longitude  string             `json:"longitude" bson:"longitude,omitempty"`
+	Photo_url  string             `json:"photo_url" bson:"photo_url,omitempty"`
+	Email      string             `json:"email" bson:"email,omitempty"`
+	Username   string             `json:"username" bson:"username,omitempty"`
+	Password   string             `json:"password" bson:"password,omitempty"`
+	Role_id    primitive.ObjectID `bson:"role_id,omitempty" binding:"required" json:"role_id"`
+	Created_at time.Time          `json:"created_at" bson:"created_at,omitempty"`
 }

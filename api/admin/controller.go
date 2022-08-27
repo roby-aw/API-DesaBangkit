@@ -63,3 +63,19 @@ func (Controller Controller) GetRole(c echo.Context) error {
 		"data":     result,
 	})
 }
+
+func (Controller *Controller) CreateCooperation(c echo.Context) error {
+	Data := adminBusiness.RegCooperation{}
+	c.Bind(&Data)
+	_, err := Controller.service.CreateCooperation(&Data)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"code":     400,
+			"messages": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success create cooperation",
+	})
+}

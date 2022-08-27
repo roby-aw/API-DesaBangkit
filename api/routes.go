@@ -34,6 +34,7 @@ func RegistrationPath(e *echo.Echo, controller Controller) {
 	// e.POST("/register", controller.UserController.RegisterUser)
 	// e.GET("/User", controller.UserController.FindUser)
 	admin := e.Group("/administrators")
+	admin.POST("/cooperation", controller.AdminController.CreateCooperation)
 	admin.GET("/role", controller.AdminController.GetRole)
 	admin.POST("/registrations", controller.AdminController.RegisterAdmin)
 	admin.POST("/login", controller.AdminController.LoginAdmin)

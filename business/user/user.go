@@ -88,6 +88,7 @@ type Product struct {
 	Latitude       string             `json:"latitude" bson:"latitude,omitempty"`
 	Longitude      string             `json:"longitude" bson:"longitude,omitempty"`
 	UserID         primitive.ObjectID `json:"userid" bson:"userid,omitempty"`
+	User           Account            `json:"user" bson:"account,omitempty"`
 	UserAddress    string             `json:"user_address" bson:"user_address,omitempty"`
 	IsPreorder     bool               `json:"is_preorder" bson:"is_preorder,omitempty"`
 	IsApproved     bool               `json:"is_approved" bson:"is_approved,omitempty"`
@@ -110,4 +111,19 @@ type InputProduct struct {
 	IsPreorder     bool      `json:"is_preorder" bson:"is_preorder,omitempty"`
 	IsApproved     bool      `json:"is_approved" bson:"is_approved,omitempty"`
 	Created_at     time.Time `json:"created_at" bson:"created_at,omitempty"`
+}
+
+type Cooperation struct {
+	ID         primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Name       string             `json:"name" bson:"name,omitempty"`
+	Address    string             `json:"address" bson:"address,omitempty"`
+	City       string             `json:"city" bson:"city,omitempty"`
+	Province   string             `json:"province" bson:"province,omitempty"`
+	Latitude   string             `json:"latitude" bson:"latitude,omitempty"`
+	Longitude  string             `json:"longitude" bson:"longitude,omitempty"`
+	Photo_url  string             `json:"photo_url" bson:"photo_url,omitempty"`
+	Email      string             `json:"email" bson:"email,omitempty"`
+	Username   string             `json:"username" bson:"username,omitempty"`
+	Password   string             `json:"password" bson:"password,omitempty"`
+	Created_at time.Time          `json:"created_at" bson:"created_at,omitempty"`
 }
