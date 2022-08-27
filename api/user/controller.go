@@ -328,9 +328,9 @@ func (Controller *Controller) GetProductByIdAccStatus(c echo.Context) error {
 	if approved != "" {
 		appr, _ = strconv.ParseBool(approved)
 	}
-	verified := c.QueryParam("verified")
-	if verified != "" {
-		ver, _ = strconv.ParseBool(verified)
+	preorder := c.QueryParam("preorder")
+	if preorder != "" {
+		ver, _ = strconv.ParseBool(preorder)
 	}
 	product, err := Controller.service.GetProductByIdAccStatus(&appr, &ver, id)
 	if err != nil {
