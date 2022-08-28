@@ -267,6 +267,14 @@ func (repo *MongoDBRepository) GetProductByIdAccount(id string) ([]user.Product,
 			},
 		},
 		bson.M{
+			"$lookup": bson.M{
+				"from":         "cooperation",
+				"localField":   "cooperationid",
+				"foreignField": "_id",
+				"as":           "cooperations",
+			},
+		},
+		bson.M{
 			"$unwind": "$account",
 		},
 		bson.M{

@@ -85,6 +85,7 @@ type Product struct {
 	Category       string             `json:"category" bson:"category,omitempty"`
 	DeliveryOption string             `json:"delivery_option" bson:"delivery_option,omitempty"`
 	Cooperationid  primitive.ObjectID `json:"cooperationid" bson:"cooperationid,omitempty"`
+	Cooperations   []Cooperation      `json:"cooperations" bson:"cooperations,omitempty"`
 	Latitude       string             `json:"latitude" bson:"latitude,omitempty"`
 	Longitude      string             `json:"longitude" bson:"longitude,omitempty"`
 	UserID         primitive.ObjectID `json:"userid" bson:"userid,omitempty"`
