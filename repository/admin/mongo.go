@@ -21,6 +21,7 @@ type MongoDBRepository struct {
 	col     *mongo.Collection
 	colRole *mongo.Collection
 	colCoop *mongo.Collection
+	colProd *mongo.Collection
 }
 
 func NewMongoRepository(col *mongo.Database) *MongoDBRepository {
@@ -28,6 +29,7 @@ func NewMongoRepository(col *mongo.Database) *MongoDBRepository {
 		col:     col.Collection("admin"),
 		colRole: col.Collection("roles_admin"),
 		colCoop: col.Collection("cooperation"),
+		colProd: col.Collection("products"),
 	}
 }
 
@@ -136,4 +138,59 @@ func (repo *MongoDBRepository) CreateCooperation(Data *admin.RegCooperation) (*a
 	id, err := primitive.ObjectIDFromHex(fmt.Sprintf("%s", result.InsertedID))
 	tmpCooperation.ID = id
 	return &tmpCooperation, nil
+}
+
+func (repo *MongoDBRepository) GetProductByStatus(preorder *bool) ([]admin.Product, error) {
+	var Product []admin.Product
+	filter := bson.A{
+		bson.M{
+			"$lookup": bson.M{
+				"from":         "users",
+				"localField":   "userid",
+				"foreignField": "_id",
+				"as":           "account",
+			},
+		},
+	}
+	if preorder != nil {
+		fmt.Println("preorder not nil")
+		filter1 := bson.M{
+			"$match": bson.M{
+				"is_preorder": preorder,
+			},
+		}
+		filter = append(filter, filter1)
+	}
+	fmt.Println(filter)
+
+	cur, err := repo.colProd.Aggregate(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+	for cur.Next(context.TODO()) {
+		var elem admin.Product
+		err := cur.Decode(&elem)
+		if err != nil {
+			return nil, err
+		}
+		Product = append(Product, elem)
+	}
+	return Product, nil
+}
+
+func (repo *MongoDBRepository) UpdateStatusProduct(id string) error {
+	ObjId_id, _ := primitive.ObjectIDFromHex(id)
+	filter := bson.M{
+		"_id": ObjId_id,
+	}
+	update := bson.M{
+		"$set": bson.M{
+			"is_approved": true,
+		},
+	}
+	_, err := repo.colProd.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
 }

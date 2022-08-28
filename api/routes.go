@@ -38,6 +38,8 @@ func RegistrationPath(e *echo.Echo, controller Controller) {
 	// e.POST("/register", controller.UserController.RegisterUser)
 	// e.GET("/User", controller.UserController.FindUser)
 	admin := e.Group("/administrators")
+	admin.GET("/products", controller.AdminController.FindProductByStatus)
+	admin.POST("/products/:id/approve", controller.AdminController.UpdateStatusProduct)
 	admin.POST("/cooperation", controller.AdminController.CreateCooperation)
 	admin.GET("/role", controller.AdminController.GetRole)
 	admin.POST("/registrations", controller.AdminController.RegisterAdmin)

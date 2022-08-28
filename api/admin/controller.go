@@ -3,6 +3,7 @@ package admin
 import (
 	adminBusiness "api-desatanggap/business/admin"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -77,5 +78,46 @@ func (Controller *Controller) CreateCooperation(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"code":     200,
 		"messages": "success create cooperation",
+	})
+}
+
+func (Controller *Controller) FindProductByStatus(c echo.Context) error {
+	var preorder *bool
+	if c.QueryParam("preorder") != "" {
+		preorder1, _ := strconv.ParseBool(c.QueryParam("preorder"))
+		preorder = &preorder1
+	}
+	result, err := Controller.service.GetProductByStatus(preorder)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"code":     400,
+			"messages": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success get product",
+		"data":     result,
+	})
+}
+
+func (Controller *Controller) UpdateStatusProduct(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"code":     400,
+			"messages": "id is required",
+		})
+	}
+	err := Controller.service.UpdateStatusProduct(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"code":     400,
+			"messages": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"code":     200,
+		"messages": "success update status product",
 	})
 }

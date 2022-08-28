@@ -13,6 +13,8 @@ type Repository interface {
 	CreateToken(Data *Admin) (*string, error)
 	GetRole() ([]*Role, error)
 	CreateCooperation(Data *RegCooperation) (*Cooperation, error)
+	GetProductByStatus(preorder *bool) ([]Product, error)
+	UpdateStatusProduct(id string) error
 }
 type Service interface {
 	CreateAdmin(Data *RegAdmin) (*Admin, error)
@@ -20,6 +22,8 @@ type Service interface {
 	LoginAdmin(auth *AuthLogin) (*ResponseLogin, error)
 	GetRole() ([]*Role, error)
 	CreateCooperation(Data *RegCooperation) (*Cooperation, error)
+	GetProductByStatus(preorder *bool) ([]Product, error)
+	UpdateStatusProduct(id string) error
 }
 
 type service struct {
@@ -69,4 +73,12 @@ func (s *service) GetRole() ([]*Role, error) {
 
 func (s *service) CreateCooperation(Data *RegCooperation) (*Cooperation, error) {
 	return s.repository.CreateCooperation(Data)
+}
+
+func (s *service) GetProductByStatus(preorder *bool) ([]Product, error) {
+	return s.repository.GetProductByStatus(preorder)
+}
+
+func (s *service) UpdateStatusProduct(id string) error {
+	return s.repository.UpdateStatusProduct(id)
 }
